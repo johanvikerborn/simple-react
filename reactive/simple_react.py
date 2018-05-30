@@ -1,3 +1,5 @@
+import charms.apt
+
 from charms.reactive import when, when_not, set_state
 
 from charmhelpers.core.hookenv import status_set
@@ -17,7 +19,11 @@ def install_simple_react():
     #  * https://jujucharms.com/docs/devel/developer-getting-started
     #  * https://github.com/juju-solutions/layer-basic#overview
     #
-    print("I hope this is logged!")
-    set_state('simple-react.installed')
-    status_set("active", "Ready")
+    status_set('waiting', 'Git installing')
+    charms.apt.queue_install(['git'])
     log("Installation complete")
+    set_state('simple-react.installed')
+
+@when('apt.installed.git')
+def install_git():
+    status_set("active", "Ready")
